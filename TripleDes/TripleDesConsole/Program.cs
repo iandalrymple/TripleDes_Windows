@@ -2,14 +2,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Security.Cryptography;
+using TripleDesConsole;
 
 class Program
 {
-    // Here is the link that was used for setting up the logging.
-    // https://www.blinkingcaret.com/2018/02/14/net-core-console-logging/#:~:text=This%20blog%20post%20will%20walk%20you%20through%20setting,add%20package%20Serilog.Sinks.File%20And%20then%20in%20Program.cs%E2%80%99%20Main%3A
-
-    // Link for db context in console application 
-    // http://www.techtutorhub.com/article/How-to-Add-Entity-Framework-Core-DBContext-in-Dot-NET-Core-Console-Application/86#:~:text=%20How%20to%20Add%20Entity%20Framework%20Core%20DBContext,the%20DbContext%20and%20Models%20from%20already...%20More%20
+    // Constants 
+    const int IDX_TYPE      = 0;
+    const int IDX_IN_FILE   = 1;
+    const int IDX_OUT_FILE  = 3;
 
     static void Main(string[] args)
     {
@@ -45,6 +46,42 @@ class Program
             logger?.LogInformation("Starting the application.");
 
 
+            
+
+
+
+            // Decide what we want to do based on first argument 
+            if (args[IDX_TYPE] == "ENCRYPT")
+            {
+                // Encrypt the contents of the file 
+                EncryptionHelpers.EncryptTextToFile(args[IDX_IN_FILE], File.ReadAllText(args[IDX_OUT_FILE]);
+
+                // Read in the file we want to encrypt 
+                string inContents = File.ReadAllText(args[IDX_IN_FILE]);
+
+                // Encrypt the inContents 
+                inContents = EncryptPlainTextToCipherText(inContents, args[IDX_PASSWORD]);
+
+                // Now write back out to a file 
+                File.WriteAllText(args[IDX_OUT_FILE], inContents);
+
+                // Print the file out again after parsing just to make sure nothing got messed up 
+                Console.WriteLine(DecryptCipherTextToPlainText(File.ReadAllText(args[IDX_OUT_FILE]), args[IDX_PASSWORD]));
+            }
+            //else
+            //{
+            //    // Read in the file we want to decrypt 
+            //    string inContents = File.ReadAllText(args[IDX_IN_FILE]);
+
+            //    // Decrypt the inContents 
+            //    inContents = DecryptCipherTextToPlainText(inContents, args[IDX_PASSWORD]);
+
+            //    // Now write back out to a file 
+            //    File.WriteAllText(args[IDX_OUT_FILE], inContents);
+
+            //    // Print the file out again after parsing just to make sure nothing got messed up 
+            //    Console.WriteLine(inContents);
+            //}
 
             // Log out here that we have completed the application 
             logger?.LogInformation("Completing the application.");

@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+TripleDes/TripleDesConsole/SecretsLocal.txt
+TripleDes/TripleDesConsole/Credentials.json
