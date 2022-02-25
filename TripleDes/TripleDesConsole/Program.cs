@@ -13,10 +13,6 @@ class Program
 
     static void Main(string[] args)
     {
-        // Grab the config in case we need to inject 
-        IConfiguration configuration = new ConfigurationBuilder()
-                                           .AddJsonFile("appsettings.json")
-                                           .Build();
         // Configure the logger 
         Log.Logger = new LoggerConfiguration()
                         .WriteTo.File("AppLogs.log")
@@ -24,9 +20,6 @@ class Program
 
         // Create the collection
         var serviceCollection = new ServiceCollection();
-
-        // Register the configuration
-        serviceCollection.AddSingleton(configuration);
 
         // Register classes with logger 
         serviceCollection.AddLogging(configure => configure.AddSerilog());
@@ -73,7 +66,7 @@ class Program
             }
 
             // Log out here that we have completed the application 
-            logger?.LogInformation("Starting the application with: " + args[0] + " " + args[1] + " " + args[2]);
+            logger?.LogInformation("Closing the application with: " + args[0] + " " + args[1] + " " + args[2]);
         }
         catch (Exception ex)
         {
