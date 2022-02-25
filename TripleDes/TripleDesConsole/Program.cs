@@ -28,6 +28,9 @@ class Program
         // Register the configuration
         serviceCollection.AddSingleton(configuration);
 
+        // Register classes with logger 
+        serviceCollection.AddLogging(configure => configure.AddSerilog());
+
         // Create the provider 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -37,7 +40,7 @@ class Program
         try
         {
             // Log out here that we have started the application 
-            logger?.LogInformation("Starting the application.");
+            logger?.LogInformation("Starting the application with: " + args[0] + " " + args[1] + " " + args[2]);
 
             // Get the key and IV 
             byte[] desKey = GlobalHelpers.CommaSeparatedStringToByteArray(SecretManager.ReadSecretString("DesKey"));
@@ -70,7 +73,7 @@ class Program
             }
 
             // Log out here that we have completed the application 
-            logger?.LogInformation("Completing the application.");
+            logger?.LogInformation("Starting the application with: " + args[0] + " " + args[1] + " " + args[2]);
         }
         catch (Exception ex)
         {
