@@ -2,15 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using System.Security.Cryptography;
 using TripleDesConsole;
 
 class Program
 {
     // Constants 
-    const int IDX_TYPE      = 0;
-    const int IDX_IN_FILE   = 1;
-    const int IDX_OUT_FILE  = 3;
+    const int IDX_TYPE      = 0;        // ENCRYPT or DECRYPT
+    const int IDX_IN_FILE   = 1;        // Contains the raw data 
+    const int IDX_OUT_FILE  = 2;        // New file with resulting data 
 
     static void Main(string[] args)
     {
@@ -29,11 +28,6 @@ class Program
         // Register the configuration
         serviceCollection.AddSingleton(configuration);
 
-        //// Register classes with logger 
-        //serviceCollection.AddLogging(configure => configure.AddSerilog())
-        //                        .AddSingleton<RestoreDatabase>()
-        //                        .AddSingleton<EmailWrapper>();
-
         // Create the provider 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -45,43 +39,35 @@ class Program
             // Log out here that we have started the application 
             logger?.LogInformation("Starting the application.");
 
+            // Get the key and IV 
+            byte[] desKey = GlobalHelpers.CommaSeparatedStringToByteArray(SecretManager.ReadSecretString("DesKey"));
+            byte[] desIv = GlobalHelpers.CommaSeparatedStringToByteArray(SecretManager.ReadSecretString("InitVector"));
 
-            
-
-
+            // Make sure the outfile is blown out 
+            if(File.Exists(args[IDX_OUT_FILE]))
+                File.Delete(args[IDX_OUT_FILE]);
 
             // Decide what we want to do based on first argument 
             if (args[IDX_TYPE] == "ENCRYPT")
             {
                 // Encrypt the contents of the file 
-                EncryptionHelpers.EncryptTextToFile(args[IDX_IN_FILE], File.ReadAllText(args[IDX_OUT_FILE]);
-
-                // Read in the file we want to encrypt 
-                string inContents = File.ReadAllText(args[IDX_IN_FILE]);
-
-                // Encrypt the inContents 
-                inContents = EncryptPlainTextToCipherText(inContents, args[IDX_PASSWORD]);
-
-                // Now write back out to a file 
-                File.WriteAllText(args[IDX_OUT_FILE], inContents);
+                EncryptionHelpers.EncryptTextToFile(args[IDX_IN_FILE], args[IDX_OUT_FILE], desKey, desIv);
 
                 // Print the file out again after parsing just to make sure nothing got messed up 
-                Console.WriteLine(DecryptCipherTextToPlainText(File.ReadAllText(args[IDX_OUT_FILE]), args[IDX_PASSWORD]));
+                Console.WriteLine(EncryptionHelpers.DecryptTextFromFile(args[IDX_OUT_FILE], desKey, desIv));
             }
-            //else
-            //{
-            //    // Read in the file we want to decrypt 
-            //    string inContents = File.ReadAllText(args[IDX_IN_FILE]);
+            else
+            {
+                // Get the string of the decrypted file 
+                string decryptedFile = EncryptionHelpers.DecryptTextFromFile(args[IDX_IN_FILE], desKey, desIv);
 
-            //    // Decrypt the inContents 
-            //    inContents = DecryptCipherTextToPlainText(inContents, args[IDX_PASSWORD]);
+                // Write it to file 
+                using (StreamWriter outputFile = new StreamWriter(args[IDX_OUT_FILE]))
+                    outputFile.WriteLine(decryptedFile);
 
-            //    // Now write back out to a file 
-            //    File.WriteAllText(args[IDX_OUT_FILE], inContents);
-
-            //    // Print the file out again after parsing just to make sure nothing got messed up 
-            //    Console.WriteLine(inContents);
-            //}
+                // Print out the results from the file as a double check 
+                Console.WriteLine(File.ReadAllText(args[IDX_OUT_FILE]));
+            }
 
             // Log out here that we have completed the application 
             logger?.LogInformation("Completing the application.");

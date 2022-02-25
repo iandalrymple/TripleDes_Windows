@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TripleDesConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "DECRYPT ENCRYPTED.txt DECRYPTED.json"
+    }
+  }
+}
