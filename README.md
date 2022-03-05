@@ -13,6 +13,7 @@ Simple console application to convert a file into Triple-DES encryption or decry
         "InitVector": "1, 2, 3, 4, 5, 6, 7, 8"
       }
       
+      
 - Build the solution. 
 - Place the file you want encrypted or decrypted in the same directory as the compiled exe.
 - Open command prompt from the same directory as the executable. 
