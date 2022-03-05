@@ -16,7 +16,7 @@ Simple console application to convert a file into Triple-DES encryption or decry
 - Build the solution. 
 - Place the file you want encrypted or decrypted in the same directory as the compiled exe.
 - Open command prompt from the same directory as the executable. 
--
+
 - To Encrypt enter: "TripleDesConsole.exe ENCRYPT inFile.extension outFile.extension". The output encrypted  
   file will be placed in the same folder as the executable. inFile.extension is not encrypted and outFile.extension
   is encrypted. 
